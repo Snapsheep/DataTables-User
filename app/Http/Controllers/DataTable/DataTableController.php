@@ -31,7 +31,7 @@ abstract class DataTableController extends Controller
      * @return Illminate\Http\
     */
 
-    public function index(Request $request)//
+    public function index(Request $request)////
     {
         return response()->json([
             'data' => [
