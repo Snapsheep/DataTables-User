@@ -26,4 +26,14 @@ class UserController extends DataTableController
             'name', 'email', 'created_at'
         ];
     }
+
+    public function update($id, Request $request)
+    {
+        $this->validate($request, [
+            'name' => 'required',
+            'email' => 'required|email|unique:users,email',
+        ]);
+
+        $this->builder->find($id)->update($request->only($this->getUpdatableColumns()));
+    }
 }

@@ -4,6 +4,31 @@
         <div class="panel-heading">{{ response.table }}</div>
         
         <div class="panel-body">
+            <form action="#" @submit.prevent="getRecords">
+                <label for="search">Search</label>
+                <div class="row row-fluid">
+                    <div class="form-group col-md-3">
+                        <select class="form-control" v-model="search.column">
+                            <option :value="column" v-for="column in response.displayable">
+                                {{ column }}
+                            </option>
+                        </select>
+                    </div>
+                    <div class="form-group col-md-3">
+                        <select class="form-control" v-model="search.operator">
+                            <option value="equals">=</option>
+                        </select>
+                    </div>
+                    <div class="form-group col-md-6">
+                        <div class="input-group">
+                            <input type="text" id="search" v-model="search.value" class="form-control">    
+                            <span class="input-group-btn">
+                                <button class="btn btn-default" type="submit">Search</button>
+                            </span>          
+                        </div>
+                    </div>
+                </div>
+            </form>
 
             <div class="row">
                 <div class="form-group col-md-10">
@@ -43,9 +68,11 @@
                         <tr v-for="record in filteredRecords">
                             <td v-for="columnValue, column in record">
                                 <template v-if="editing.id === record.id && isUpdatable(column)">
-                                    <div class="form-group">
-                                        <!-- <input type="text" class="form-control" :value="columnValue">                                     -->
+                                    <div class="form-group" :class="{ 'has-error': editing.errors[column] }">
                                         <input type="text" class="form-control" v-model="editing.form[column]" :key="columnValue">                                    
+                                        <span class="help-block" v-if="editing.errors[column]">
+                                            <strong>{{ editing.errors[column][0] }}</strong>
+                                        </span>
                                     </div>
                                 </template>
                                 <template v-else>
@@ -90,7 +117,12 @@
                 editing: {
                     id: null,
                     form: {},
-                    error: []
+                    errors: []
+                },
+                search: {
+                    value: '',
+                    operator: 'equals',
+                    column: 'id'
                 }
             }
         },
@@ -127,7 +159,8 @@
             },
             getQueryParameters() {
                 return queryString.stringify({
-                    limit: this.limit
+                    limit: this.limit,
+                    ...this.search
                 })
             },
             sortBy(column) {
@@ -144,7 +177,14 @@
                 return this.response.updatable.includes(column)
             },
             update() {
-                console.log(this.editing.form);
+                axios.patch(`${this.endpoint}/${this.editing.id}`, this.editing.form).then(() => {
+                    this.getRecords().then(() => {
+                        this.editing.id = null
+                        this.editing.form = {}
+                    })
+                }).catch((error) => {
+                    this.editing.errors = error.response.data.errors
+                })
             }
         },
         mounted() {
