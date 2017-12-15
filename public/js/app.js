@@ -43314,6 +43314,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
 
 
 
@@ -43392,6 +43394,9 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         },
         isUpdatable: function isUpdatable(column) {
             return this.response.updatable.includes(column);
+        },
+        update: function update() {
+            console.log(this.editing.form);
         }
     },
     mounted: function mounted() {
@@ -43865,9 +43870,30 @@ var render = function() {
                           ? [
                               _c("div", { staticClass: "form-group" }, [
                                 _c("input", {
+                                  directives: [
+                                    {
+                                      name: "model",
+                                      rawName: "v-model",
+                                      value: _vm.editing.form[column],
+                                      expression: "editing.form[column]"
+                                    }
+                                  ],
+                                  key: columnValue,
                                   staticClass: "form-control",
                                   attrs: { type: "text" },
-                                  domProps: { value: columnValue }
+                                  domProps: { value: _vm.editing.form[column] },
+                                  on: {
+                                    input: function($event) {
+                                      if ($event.target.composing) {
+                                        return
+                                      }
+                                      _vm.$set(
+                                        _vm.editing.form,
+                                        column,
+                                        $event.target.value
+                                      )
+                                    }
+                                  }
                                 })
                               ])
                             ]
@@ -43904,6 +43930,21 @@ var render = function() {
                       _vm._v(" "),
                       _vm.editing.id === record.id
                         ? [
+                            _c(
+                              "a",
+                              {
+                                attrs: { href: "#" },
+                                on: {
+                                  click: function($event) {
+                                    $event.preventDefault()
+                                    _vm.update($event)
+                                  }
+                                }
+                              },
+                              [_vm._v("Save")]
+                            ),
+                            _c("br"),
+                            _vm._v(" "),
                             _c(
                               "a",
                               {

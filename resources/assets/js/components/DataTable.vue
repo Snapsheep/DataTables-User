@@ -44,7 +44,8 @@
                             <td v-for="columnValue, column in record">
                                 <template v-if="editing.id === record.id && isUpdatable(column)">
                                     <div class="form-group">
-                                        <input type="text" class="form-control" :value="columnValue">                                    
+                                        <!-- <input type="text" class="form-control" :value="columnValue">                                     -->
+                                        <input type="text" class="form-control" v-model="editing.form[column]" :key="columnValue">                                    
                                     </div>
                                 </template>
                                 <template v-else>
@@ -55,6 +56,7 @@
                                 <a href="#" @click.prevent="edit(record)" v-if="editing.id !== record.id">Edit</a>
                                     
                                 <template v-if="editing.id === record.id">
+                                    <a href="#" @click.prevent="update">Save</a><br>
                                     <a href="#" @click.prevent="editing.id = null">Cancel</a>
                                 </template>
                             </td>
@@ -140,6 +142,9 @@
             },
             isUpdatable(column) {
                 return this.response.updatable.includes(column)
+            },
+            update() {
+                console.log(this.editing.form);
             }
         },
         mounted() {
