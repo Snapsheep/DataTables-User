@@ -2,28 +2,34 @@
 
 namespace App\Http\Controllers\DataTable;
 
-use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
 use App\User;
+use Illuminate\Http\Request;
+use App\Http\Controllers\DataTable\DataTableController;
 
 class UserController extends DataTableController
 {
+    protected $allowCreation = false;
+
     public function builder()
     {
         return User::query();
     }
 
-    public function getDisplayableColumns()
+    public function getCustomColumnsNames()
     {
         return [
-            'id', 'name', 'email', 'created_at'
+            'name' => 'Full name',
+            'email' => 'Email address',
         ];
     }
 
-    public function getUpdatableColumns()
+    public function getDisplayableColumns()
     {
         return [
-            'name', 'email', 'created_at'
+            'id',
+            'name',
+            'email',
+            'created_at'
         ];
     }
 
@@ -31,9 +37,10 @@ class UserController extends DataTableController
     {
         $this->validate($request, [
             'name' => 'required',
-            'email' => 'required|email|unique:users,email',
+            'email' => 'required|unique:users,email,' . $id . '|email',
+            'created_at' => 'date'
         ]);
-
+           
         $this->builder->find($id)->update($request->only($this->getUpdatableColumns()));
     }
 }

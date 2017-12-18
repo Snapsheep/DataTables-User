@@ -15,9 +15,9 @@ class CreatePlansTable extends Migration
     {
         Schema::create('plans', function (Blueprint $table) {
             $table->increments('id');
-            $table->string('braintree_id');
             $table->decimal('price', 6, 2);
-            $table->boonlean('active')->default(false);
+            $table->string('braintree_id');
+            $table->boolean('active')->default(false);
             $table->timestamps();
         });
     }
